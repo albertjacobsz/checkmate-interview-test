@@ -1,5 +1,6 @@
 import Head from 'next/head';
 import GoogleButton from 'react-google-button';
+import { useEffect } from 'react';
 import {
   getAuth,
   GoogleAuthProvider,
@@ -37,19 +38,19 @@ export default function Home() {
 
   // Task 1: Implement Google Sign in with Firebase
   // https://firebase.google.com/docs/auth/web/google-signin
-  console.log('hello');
   const signIn = () => {
+    //very naive implementation
     signInWithRedirect(auth, provider);
-
     router.push('/signed-in', '/signed-in');
-
     /*
-      1. Use the GoogleAuthProvider to sign in with Firebase
-      2. Use signInWithRedirect to redirect the user to the Google sign in page
-      3. (Optional) Use getRedirectResult to get the result of the redirect and check out what is inside :)
-      4. Redirect the user to the signed-in page using Next.js router
-     */
+        1. Use the GoogleAuthProvider to sign in with Firebase
+        2. Use signInWithRedirect to redirect the user to the Google sign in page
+        3. (Optional) Use getRedirectResult to get the result of the redirect and check out what is inside :)
+        4. Redirect the user to the signed-in page using Next.js router
+       */
+    //
   };
+
   return (
     <>
       <Head>
@@ -69,7 +70,7 @@ export default function Home() {
             Welcome to <a href="https://checkmatehk.io">CheckMate</a>
           </h1>
           <h3>Sign in to see a random programming joke 😳</h3>
-
+          <h3></h3>
           {/* Button for user to sign in with Google */}
           {/* Task 1: Implement Google Sign in with Firebase */}
           <GoogleButton
