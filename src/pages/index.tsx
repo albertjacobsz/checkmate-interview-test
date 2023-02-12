@@ -1,12 +1,15 @@
 import Head from 'next/head';
 import GoogleButton from 'react-google-button';
-import { useEffect } from 'react';
+
 import {
   getAuth,
   GoogleAuthProvider,
   signInWithRedirect,
   getRedirectResult,
+  onAuthStateChanged,
 } from 'firebase/auth';
+
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { initializeApp } from 'firebase/app';
 
@@ -33,17 +36,26 @@ const provider = new GoogleAuthProvider();
 const auth = getAuth(app);
 
 export default function Home() {
+  const [isLoading, setIsLoading] = useState(false);
   //Next.js router
   const router = useRouter();
 
+  const getResults = async (router: any) => {
+    await getRedirectResult(auth).then((result) => {
+      setIsLoading(true);
+      router.push({
+        pathname: '/signed-in',
+        query: { user: result },
+      });
+    });
+  };
+  getResults(router);
   // Task 1: Implement Google Sign in with Firebase
   // https://firebase.google.com/docs/auth/web/google-signin
-  const signIn = () => {
+
+  const signIn = async () => {
     //very naive implementation
-    signInWithRedirect(auth, provider);
-    getRedirectResult(auth).then(() => {
-      router.push('/signed-in', '/signed-in');
-    });
+    await signInWithRedirect(auth, provider);
 
     /*
         1. Use the GoogleAuthProvider to sign in with Firebase
@@ -61,35 +73,49 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
       </Head>
       <div className="container">
-        <main
-          style={{
-            display: 'flex',
-            justifyContent: 'center',
-            alignItems: 'center',
-            flexDirection: 'column',
-          }}
-        >
-          <h1 className="title">
-            Welcome to <a href="https://checkmatehk.io">CheckMate</a>
-          </h1>
-          <h3>Sign in to see a random programming joke 😳</h3>
-          <h3></h3>
-          {/* Button for user to sign in with Google */}
-          {/* Task 1: Implement Google Sign in with Firebase */}
-          <GoogleButton
-            label={'Sign in with Google'}
-            type="light"
+        {!isLoading && (
+          <main
             style={{
-              width: '50%',
               display: 'flex',
               justifyContent: 'center',
               alignItems: 'center',
-              fontFamily: 'Roboto, sans-serif',
-              color: '#444',
+              flexDirection: 'column',
             }}
-            onClick={signIn}
-          />
-        </main>
+          >
+            <h1 className="title">
+              Welcome to <a href="https://checkmatehk.io">CheckMate</a>
+            </h1>
+            <h3>Sign in to see a random programming joke 😳</h3>
+            <h3></h3>
+            {/* Button for user to sign in with Google */}
+            {/* Task 1: Implement Google Sign in with Firebase */}
+            <GoogleButton
+              label={'Sign in with Google'}
+              type="light"
+              style={{
+                width: '50%',
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+                fontFamily: 'Roboto, sans-serif',
+                color: '#444',
+              }}
+              onClick={signIn}
+            />
+          </main>
+        )}
+        {isLoading && (
+          <main
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              flexDirection: 'column',
+            }}
+          >
+            <h3>Loading...</h3>
+          </main>
+        )}
       </div>
     </>
   );

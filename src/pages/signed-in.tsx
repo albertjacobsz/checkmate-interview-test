@@ -1,10 +1,12 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
+import { initializeApp } from 'firebase/app';
 
 export default function SignedIn({
   joke,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [isHovering, setIsHovering] = useState(false);
+
   const handleMouseOver = () => {
     setIsHovering(true);
   };
@@ -14,7 +16,7 @@ export default function SignedIn({
   return (
     <div>
       <center>
-        <h1>Signed In</h1>
+        <h1>Hello {}</h1>
 
         <h3>
           Setup: <b>{joke.data[0].setup}</b>
