@@ -41,7 +41,10 @@ export default function Home() {
   const signIn = () => {
     //very naive implementation
     signInWithRedirect(auth, provider);
-    router.push('/signed-in', '/signed-in');
+    getRedirectResult(auth).then(() => {
+      router.push('/signed-in', '/signed-in');
+    });
+
     /*
         1. Use the GoogleAuthProvider to sign in with Firebase
         2. Use signInWithRedirect to redirect the user to the Google sign in page
