@@ -1,38 +1,71 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
-import { initializeApp } from 'firebase/app';
+import { FirebaseApp, initializeApp } from 'firebase/app';
+import {
+  Auth,
+  getAuth,
+  GoogleAuthProvider,
+  onAuthStateChanged,
+} from 'firebase/auth';
+import { useRouter } from 'next/router';
+const firebaseConfig = {
+  apiKey: 'AIzaSyBO4LEieQNAuG2w_s2ActgtKSyqp6GaRGE',
+  authDomain: 'checkmate-interview.firebaseapp.com',
+  projectId: 'checkmate-interview',
+  storageBucket: 'checkmate-interview.appspot.com',
+  messagingSenderId: '596221673049',
+  appId: '1:596221673049:web:b589dd84fb353884fb7b48',
+  measurementId: 'G-F6DTM4PFEG',
+};
+
+const app = initializeApp(firebaseConfig);
+
+// GoogleAuthProvider instance
+const provider = new GoogleAuthProvider();
+// Firebase Auth instance
+const auth = getAuth(app);
 
 export default function SignedIn({
   joke,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const [isHovering, setIsHovering] = useState(false);
+  const [user, setUser] = useState(null);
 
+  onAuthStateChanged(auth, (user) => {
+    if (user != null) {
+      setUser(user.displayName);
+    }
+  });
   const handleMouseOver = () => {
     setIsHovering(true);
   };
   const handleMouseOut = () => {
     setIsHovering(false);
   };
+
   return (
     <div>
       <center>
-        <h1>Hello {}</h1>
-
-        <h3>
-          Setup: <b>{joke.data[0].setup}</b>
-        </h3>
-        <div
-          className="actor"
-          onMouseOver={handleMouseOver}
-          onMouseOut={handleMouseOut}
-        >
-          <h4>Hover Here to see the punchline</h4>
-        </div>
-        {isHovering && (
-          <div className="hide">
-            <h4>{joke.data[0].punchline}</h4>
+        <h1>Hello {user}, would you like a joke?</h1>
+        <div>
+          <h3>
+            Setup: <b>{joke.data[0].setup}</b>
+          </h3>
+          <div
+            className="actor"
+            onMouseOver={handleMouseOver}
+            onMouseOut={handleMouseOut}
+          >
+            <h4>
+              Hover <i>here</i> to see the punchline
+            </h4>
           </div>
-        )}
+          {isHovering && (
+            <div className="hide">
+              <h4>{joke.data[0].punchline}</h4>
+            </div>
+          )}
+        </div>
       </center>
     </div>
   );
