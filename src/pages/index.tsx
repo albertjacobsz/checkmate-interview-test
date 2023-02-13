@@ -9,7 +9,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { initializeApp } from 'firebase/app';
 
@@ -39,31 +39,37 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   //Next.js router
   const router = useRouter();
+  const getResults = async () => {
+    return getRedirectResult(auth).then((result) => {
+      setIsLoading(true);
+      const result2 = result?.user.displayName;
+      return result2;
+    });
+  };
 
-  const getResults = async (router: any) => {
-    await getRedirectResult(auth).then((result) => {
+  onAuthStateChanged(auth, (user) => {
+    console.log(user);
+    if (user) {
       setIsLoading(true);
       router.push({
         pathname: '/signed-in',
-        query: { user: result },
+        query: { user: user.displayName },
       });
-    });
-  };
-  getResults(router);
-  // Task 1: Implement Google Sign in with Firebase
-  // https://firebase.google.com/docs/auth/web/google-signin
-
-  const signIn = async () => {
-    //very naive implementation
-    await signInWithRedirect(auth, provider);
-
-    /*
-        1. Use the GoogleAuthProvider to sign in with Firebase
-        2. Use signInWithRedirect to redirect the user to the Google sign in page
-        3. (Optional) Use getRedirectResult to get the result of the redirect and check out what is inside :)
-        4. Redirect the user to the signed-in page using Next.js router
-       */
-    //
+    } else {
+      getResults().then((result) => {
+        if (result != null) {
+          router.push({
+            pathname: '/signed-in',
+            query: { user: result },
+          });
+        } else {
+          setIsLoading(false);
+        }
+      });
+    }
+  });
+  const signIn = () => {
+    signInWithRedirect(auth, provider);
   };
 
   return (
