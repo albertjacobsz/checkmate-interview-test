@@ -9,7 +9,7 @@ import {
   onAuthStateChanged,
 } from 'firebase/auth';
 
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { useRouter } from 'next/router';
 import { initializeApp } from 'firebase/app';
 
@@ -39,33 +39,27 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   //Next.js router
   const router = useRouter();
-  const getResults = async () => {
-    return getRedirectResult(auth).then((result) => {
-      setIsLoading(true);
-      const result2 = result?.user.displayName;
-      return result2;
-    });
+  const getResults = () => {
+    return getRedirectResult(auth);
   };
 
   onAuthStateChanged(auth, (user) => {
-    console.log(user);
-    if (user) {
-      setIsLoading(true);
-      router.push({
-        pathname: '/signed-in',
-        query: { user: user.displayName },
-      });
-    } else {
-      getResults().then((result) => {
-        if (result != null) {
-          router.push({
-            pathname: '/signed-in',
-            query: { user: result },
-          });
-        } else {
+    setIsLoading(true);
+    if (user !== null) {
+      getRedirectResult(auth)
+        .then((result) => {
+          if (result !== null) {
+            router.push({
+              pathname: '/signed-in',
+            });
+          }
+        })
+        .catch((error) => {
+          console.log(error);
           setIsLoading(false);
-        }
-      });
+        });
+    } else {
+      setIsLoading(false);
     }
   });
   const signIn = () => {

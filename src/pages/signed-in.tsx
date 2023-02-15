@@ -6,8 +6,9 @@ import {
   getAuth,
   GoogleAuthProvider,
   onAuthStateChanged,
+  signOut,
 } from 'firebase/auth';
-import { useRouter } from 'next/router';
+import Router, { useRouter } from 'next/router';
 const firebaseConfig = {
   apiKey: 'AIzaSyBO4LEieQNAuG2w_s2ActgtKSyqp6GaRGE',
   authDomain: 'checkmate-interview.firebaseapp.com',
@@ -28,9 +29,20 @@ const auth = getAuth(app);
 export default function SignedIn({
   joke,
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
+  const router = useRouter();
   const [isHovering, setIsHovering] = useState(false);
   const [user, setUser] = useState(null);
-
+  const signout = () => {
+    signOut(auth)
+      .then(() => {
+        router.push({
+          pathname: '/',
+        });
+      })
+      .catch((error) => {
+        // An error happened.
+      });
+  };
   onAuthStateChanged(auth, (user) => {
     if (user != null) {
       setUser(user.displayName);
@@ -46,7 +58,10 @@ export default function SignedIn({
   return (
     <div>
       <center>
-        <h1>Hello {user}, would you like a joke?</h1>
+        <div className="toBeHid">
+          <h1>Hello {user}, would you like a joke?</h1>
+        </div>
+
         <div>
           <h3>
             Setup: <b>{joke.data[0].setup}</b>
@@ -61,10 +76,13 @@ export default function SignedIn({
             </h4>
           </div>
           {isHovering && (
-            <div className="hide">
+            <div>
               <h4>{joke.data[0].punchline}</h4>
             </div>
           )}
+        </div>
+        <div>
+          <button onClick={signout}>signout</button>
         </div>
       </center>
     </div>
