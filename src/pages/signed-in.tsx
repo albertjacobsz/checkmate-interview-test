@@ -1,6 +1,9 @@
 import { GetServerSideProps, InferGetServerSidePropsType } from 'next';
 import { useState } from 'react';
-import { FirebaseApp, initializeApp } from 'firebase/app';
+import { initializeApp } from 'firebase/app';
+import Button from 'react-bootstrap/Button';
+import Modal from 'react-bootstrap/Modal';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import {
   Auth,
   getAuth,
@@ -31,6 +34,9 @@ export default function SignedIn({
 }: InferGetServerSidePropsType<typeof getServerSideProps>) {
   const router = useRouter();
   const [isHovering, setIsHovering] = useState(false);
+  const [smShow, setSmShow] = useState(false);
+  const [lgShow, setLgShow] = useState(false);
+
   const [user, setUser] = useState(null);
   const signout = () => {
     signOut(auth)
@@ -61,7 +67,7 @@ export default function SignedIn({
         <div className="toBeHid">
           <h1>Hello {user}, would you like a joke?</h1>
         </div>
-
+        <br></br>
         <div>
           <h3>
             Setup: <b>{joke.data[0].setup}</b>
@@ -77,12 +83,16 @@ export default function SignedIn({
           </div>
           {isHovering && (
             <div>
-              <h4>{joke.data[0].punchline}</h4>
+              <i>
+                <h4>{joke.data[0].punchline}</h4>
+              </i>
             </div>
           )}
         </div>
         <div>
-          <button onClick={signout}>signout</button>
+          <Button variant="warning" onClick={signout}>
+            signout
+          </Button>
         </div>
       </center>
     </div>

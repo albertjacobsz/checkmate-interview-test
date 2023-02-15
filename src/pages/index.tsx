@@ -39,12 +39,8 @@ export default function Home() {
   const [isLoading, setIsLoading] = useState(false);
   //Next.js router
   const router = useRouter();
-  const getResults = () => {
-    return getRedirectResult(auth);
-  };
 
   onAuthStateChanged(auth, (user) => {
-    setIsLoading(true);
     if (user !== null) {
       getRedirectResult(auth)
         .then((result) => {
@@ -56,10 +52,7 @@ export default function Home() {
         })
         .catch((error) => {
           console.log(error);
-          setIsLoading(false);
         });
-    } else {
-      setIsLoading(false);
     }
   });
   const signIn = () => {
